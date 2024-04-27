@@ -7,5 +7,7 @@
     "providers": [
         "Modules\\Inventory\\Providers\\InventoryServiceProvider"
     ],
-    "files": []
+    "files": [
+        "./app/helpers.php"
+    ]
 }

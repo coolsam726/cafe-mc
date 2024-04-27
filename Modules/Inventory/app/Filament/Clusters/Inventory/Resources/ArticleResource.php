@@ -11,6 +11,8 @@ use Modules\Inventory\Filament\Clusters\Inventory;
 use Modules\Inventory\Filament\Clusters\Inventory\Resources\ArticleResource\Pages;
 use Modules\Inventory\Models\Article;
 use Modules\Inventory\Models\ArticleType;
+use Modules\Inventory\Models\Depot;
+use function Modules\Inventory\stock;
 
 class ArticleResource extends Resource
 {
@@ -173,6 +175,53 @@ class ArticleResource extends Resource
             ])
             ->filtersLayout(Tables\Enums\FiltersLayout::AboveContent)
             ->actions([
+                Tables\Actions\Action::make('stock_mutation')
+                    ->label('Adjust Stock')
+                    ->icon('heroicon-o-plus')
+                    ->color('success')
+                    ->form([
+                        Forms\Components\Select::make('location_id')
+                            ->options(Depot::where('enabled','=', true)->pluck('name', 'id'))
+                            ->required(),
+                        Forms\Components\TextInput::make('new_quantity')
+                            ->numeric()
+                            ->required(),
+                        Forms\Components\TextInput::make('batch_number')
+                            ->helperText('Leave blank to generate a new batch with a unique batch no.'),
+                        Forms\Components\TextInput::make('reason')
+                            ->required()->columnSpanFull(),
+                    ])->action(fn($data, $record) => stock()
+                        ->adjustStock(
+                            stockable: $record,
+                            new_quantity: $data['new_quantity'],
+                            location: Depot::find($data['location_id']),
+                            reason: $data['reason'],
+                            batch_number: $data['batch_number']
+                        )
+                    ),
+                Tables\Actions\Action::make('transfer-stock')->label('Transfer Stock')
+                    ->color('primary')
+                    ->form([
+                        Forms\Components\Select::make('from')
+                            ->options(Depot::where('enabled','=', true)->pluck('name', 'id'))
+                            ->required(),
+                        Forms\Components\Select::make('to')
+                            ->options(Depot::where('enabled','=', true)->pluck('name', 'id'))
+                            ->required(),
+                        Forms\Components\TextInput::make('quantity')
+                            ->numeric()
+                            ->required(),
+                        Forms\Components\TextInput::make('reason')
+                            ->required()->columnSpanFull(),
+                    ])->action(fn($data, $record) => stock()
+                        ->transferStock(
+                            stockable: $record,
+                            quantity: $data['quantity'],
+                            from: Depot::find($data['from']),
+                            to: Depot::find($data['to']),
+                            reason: $data['reason']
+                        )
+                    ),
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),

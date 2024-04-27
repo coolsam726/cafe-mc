@@ -4,9 +4,12 @@ namespace Modules\Inventory\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Modules\Core\Concerns\HasAudit;
+use Modules\Inventory\Concerns\HasStock;
 
 class Article extends Model
 {
+    use HasStock, HasAudit;
     protected $guarded = ['id'];
 
     public function articleType(): BelongsTo

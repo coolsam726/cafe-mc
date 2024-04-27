@@ -179,7 +179,7 @@ class CoreServiceProvider extends ServiceProvider
             return $this->string('code', $length)->nullable()->index();
         });
 
-        Blueprint::macro('team', function (string $after) {
+        Blueprint::macro('team', function (?string $after = null) {
             $def = $this->foreignId(Core::TEAM_COLUMN)->nullable();
             if ($after) {
                 $def = $def->after($after);
@@ -188,6 +188,9 @@ class CoreServiceProvider extends ServiceProvider
             return $def->constrained('teams')->nullOnDelete();
         });
 
+        Blueprint::macro('dropTeam', function () {
+            return $this->dropConstrainedForeignId(Core::TEAM_COLUMN);
+        });
         Blueprint::macro('recordStatus', function () {
             return $this->enum('record_status', ['draft', 'posted', 'closed', 'cancelled'])->default('draft');
         });
@@ -216,7 +219,9 @@ class CoreServiceProvider extends ServiceProvider
         });
 
         Blueprint::macro('dropAudit', function () {
-            $this->dropColumn(['creator_id', 'updater_id', 'ip_address', 'is_immutable']);
+            $this->dropConstrainedForeignId('creator_id');
+            $this->dropConstrainedForeignId('updater_id');
+            $this->dropColumn(['ip_address', 'is_immutable']);
         });
     }
 

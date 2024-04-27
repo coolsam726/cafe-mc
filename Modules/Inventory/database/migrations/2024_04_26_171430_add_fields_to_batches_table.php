@@ -15,6 +15,7 @@ return new class extends Migration
     {
         Schema::table('batches', function (Blueprint $table) {
             $table->team('id');
+            $table->foreignId('location_id')->nullable()->constrained('depots')->restrictOnDelete();
             $table->nullableMorphs('stockable');
             $table->renameColumn('comments', 'narration');
             $table->decimal('initial_quantity', 20, 8)->after('comments')->nullable();
@@ -31,12 +32,15 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('batches', function (Blueprint $table) {
-            $table->dropColumn(core()::TEAM_COLUMN);
+            $table->dropTeam();
             $table->dropMorphs('stockable');
+            $table->dropConstrainedForeignId('location_id');
             $table->renameColumn('narration', 'comments');
             $table->dropColumn('initial_quantity');
             $table->dropColumn('current_quantity');
             $table->dropAudit();
+            $table->dropColumn('manufacture_date');
+            $table->dropColumn('expiry_date');
         });
     }
 };
