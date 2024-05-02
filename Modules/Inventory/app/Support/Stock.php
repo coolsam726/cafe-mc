@@ -41,13 +41,14 @@ class Stock
     {
         Log::info('Decreasing stock for '.$stockable->name.' at '.$location->name.' by '.$quantity.' units');
         $dQ = abs($quantity) * -1;
-        // Verify that the stock is available
-        $this->validateStockLevel($stockable, $dQ, $location);
         // Get all the batches for the stock for the current location
         /**
          * @var \Illuminate\Support\Collection|Collection|StockMutation[] $stocks
          */
         $stocks = $stockable->getStock($location);
+        if ($stocks->count() <= 0) {
+            throw new \RuntimeException('No stock found for '.$stockable->name.' at '.$location->name);
+        }
 
         Log::info('Found '.$stocks->count().' unique batches with stock for '.$stockable->name.' at '.$location->name);
 

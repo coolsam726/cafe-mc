@@ -7,10 +7,12 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Illuminate\Support\Facades\Auth;
 use Modules\Inventory\Filament\Clusters\Inventory;
 use Modules\Inventory\Filament\Clusters\Inventory\Resources\StockMutationResource\Pages;
 use Modules\Inventory\Filament\Clusters\Inventory\Resources\StockMutationResource\RelationManagers;
 use Modules\Inventory\Models\StockMutation;
+use function Modules\Core\Support\core;
 
 class StockMutationResource extends Resource
 {
@@ -19,7 +21,6 @@ class StockMutationResource extends Resource
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
     protected static ?string $cluster = Inventory::class;
-
     public static function form(Form $form): Form
     {
         return $form
@@ -75,9 +76,10 @@ class StockMutationResource extends Resource
 
     public static function table(Table $table): Table
     {
+        $gridView = core()->useGridView();
         return $table
             ->columns(static::getTableCols())
-            ->contentGrid(['md' => 2, 'xl' => 3])
+            ->contentGrid(['md' => 1, 'xl' => 2])
             ->filters([
                 //
             ])
@@ -92,19 +94,18 @@ class StockMutationResource extends Resource
                 ]),
             ])->headerActions([
                 Tables\Actions\Action::make('toggle-grid-view')
-                    ->icon(fn() => static::gridViewEnabled() ? 'heroicon-o-table-cells' : 'heroicon-o-squares-2x2')
-                    ->label(fn() => static::gridViewEnabled() ? 'Tabular View' : 'Grid View')
+                    ->icon(fn() => $gridView ? 'heroicon-o-table-cells' : 'heroicon-o-squares-2x2')
+                    ->label(fn() => $gridView ? 'Tabular View' : 'Grid View')
                     ->color('gray')
-                    ->action(function ($livewire) {
-                        session()->has('stock-mutations-grid-view') ? session()->forget('stock-mutations-grid-view') : session(['stock-mutations-grid-view' => true]);
-                        // Refresh this livewire component
+                    ->action(function () use ($gridView) {
+                        core()->setGridView(!$gridView);
                     }),
             ]);
     }
 
     public static function gridViewEnabled(): bool
     {
-        return session('stock-mutations-grid-view', false);
+        return core()->useGridView();
     }
 
     public static function getPages(): array

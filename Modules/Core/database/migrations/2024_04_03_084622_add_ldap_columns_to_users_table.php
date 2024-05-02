@@ -40,9 +40,13 @@ class AddLdapColumnsToUsersTable extends Migration
      */
     public function down()
     {
-        Schema::table('users', function (Blueprint $table) {
+        $driver = Schema::getConnection()->getDriverName();
+        Schema::table('users', function (Blueprint $table) use ($driver) {
             $table->dropColumn(['domain', 'uac']);
             $table->renameColumn('guid', 'objectguid');
+            if ($driver !== 'sqlsrv') {
+                $table->renameIndex('users_guid_unique', 'users_objectguid_unique');
+            }
         });
     }
 

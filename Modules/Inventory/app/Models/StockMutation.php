@@ -36,10 +36,7 @@ class StockMutation extends Model
 
     public function getStockableDetailsAttribute()
     {
-        return str($this->stockable_type)->afterLast('\\')
-            ->singular()->kebab()->title()->replace('-', ' ')
-            ->append('->')
-            ->append($this->stockable->getAttribute('name') ?: $this->stockable->getAttribute('code') ?: "#{$this->stockable->getKey()}");
+        return $this->stockable->details;
     }
 
     public function integrityCheck(): Attribute

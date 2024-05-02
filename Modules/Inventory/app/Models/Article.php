@@ -36,4 +36,9 @@ class Article extends Model
     {
         return $this->belongsTo(DerivedUnit::class, 'purchase_unit_id');
     }
+
+    public function getValuationRateAttribute()
+    {
+        return $this->getAttribute(config('inventory.articles.valuation_rate_column','last_receiving_price'));
+    }
 }

@@ -5,6 +5,7 @@ namespace Modules\Core\Support;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
@@ -177,5 +178,16 @@ class Core
     public function model_has_record_status(Model|string $model): bool
     {
         return $this->class_has_trait($model, HasRecordStatus::class);
+    }
+
+    public function useGridView(): bool
+    {
+        // Check in local storage
+        return boolval(Auth::user()?->setting('grid-view') ?? false);
+    }
+
+    public function setGridView(bool $value): void
+    {
+        Auth::user()?->updateSetting('grid-view', $value);
     }
 }

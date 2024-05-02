@@ -317,7 +317,7 @@ class Triggers
         if (! in_array($column, core()->getColumns($table))) {
             return null;
         }
-        $prefix = $prefix ?: utils()->generatePrefix($table);
+        $prefix = $prefix ?? core()->generatePrefix($table);
 
         return
             <<<SQL

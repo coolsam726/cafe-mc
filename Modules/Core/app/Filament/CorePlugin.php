@@ -6,8 +6,14 @@ use BezhanSalleh\FilamentShield\FilamentShieldPlugin;
 use Coolsam\Modules\Concerns\ModuleFilamentPlugin;
 use Filament\Contracts\Plugin;
 use Filament\Panel;
+use Filament\Support\Assets\Asset;
+use Filament\Support\Assets\Js;
 use Filament\Support\Colors\Color;
+use Filament\View\PanelsRenderHook;
+use Illuminate\Support\Facades\Blade;
+use Illuminate\Support\Facades\Vite;
 use Modules\Core\Filament\Clusters\SystemAdministration\Pages\LdapLogin;
+use Modules\Core\Livewire\ErrorModal;
 
 class CorePlugin implements Plugin
 {
@@ -34,8 +40,12 @@ class CorePlugin implements Plugin
                 'info' => Color::rgb('rgb(204, 156, 74)'),
             ])
             ->plugin(FilamentShieldPlugin::make())
-//            ->login(LdapLogin::class)
-            ->viteTheme('resources/css/filament/theme.css', 'build-core');
+            ->viteTheme('resources/css/filament/theme.css', 'build-core')
+            ->assets([
+                Js::make('app', Vite::asset('resources/assets/js/app.js','build-core')),
+            ],'')
+            ->renderHook(PanelsRenderHook::BODY_END, fn(): string => Blade::render('<livewire:modules.core.livewire.error-modal />'))
+        ;
 
         $this->registerLogin($panel);
 

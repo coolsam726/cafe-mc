@@ -26,7 +26,6 @@ return new class extends Migration
         Schema::table('articles', function (Blueprint $table) {
             $table->renameColumn('storage_unit_id', 'derived_unit_id');
             $table->dropConstrainedForeignId('purchase_unit_id');
-            $table->dropColumn('purchase_unit_id');
             $table->dropColumn('unit_cost');
         });
     }

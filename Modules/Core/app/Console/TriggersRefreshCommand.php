@@ -27,7 +27,7 @@ class TriggersRefreshCommand extends Command
         ]))->map(fn ($table) => $this->call('core:triggers:install', ['table' => $table]));
 
         // Install Parent Triggers
-        $this->call('core:parent:trigger', ['table' => 'all']);
+//        $this->call('core:parent:trigger', ['table' => 'all']);
     }
 
     protected function getArguments(): array

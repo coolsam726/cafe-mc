@@ -2,6 +2,7 @@
 
 namespace Modules\Inventory\Concerns;
 
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
@@ -29,5 +30,18 @@ trait HasStock
     public function getStock(Depot|null $location = null, ?Batch $batch = null): Collection|\Illuminate\Support\Collection
     {
         return stock()->getStock($this, $location, $batch);
+    }
+
+    public function currentStock(): Attribute
+    {
+        return Attribute::make(get: fn() => $this->getStock()->sum('new_quantity'));
+    }
+
+    public function details(): Attribute
+    {
+        return Attribute::make(get:  fn() =>  str($this->getMorphClass())->afterLast('\\')
+            ->singular()->kebab()->title()->replace('-', ' ')
+            ->append('->')
+            ->append($this->getAttribute('name') ?: $this->getAttribute('code') ?: "#{$this->getKey()}"));
     }
 }

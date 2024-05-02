@@ -175,8 +175,14 @@ class CoreServiceProvider extends ServiceProvider
 
     private function registerMacros(): void
     {
-        Blueprint::macro('code', function ($length = 30) {
-            return $this->string('code', $length)->nullable()->index();
+        Blueprint::macro('code', function ($length = 30, bool $uniquePerTeam = false) {
+            $return = $this->string('code', $length)->nullable();
+            if ($uniquePerTeam) {
+                $this->unique(['code', Core::TEAM_COLUMN]);
+            } else {
+                $return->unique();
+            }
+            return $return;
         });
 
         Blueprint::macro('team', function (?string $after = null) {

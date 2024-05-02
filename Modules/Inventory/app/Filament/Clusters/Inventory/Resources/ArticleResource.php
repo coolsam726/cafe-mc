@@ -110,6 +110,7 @@ class ArticleResource extends Resource
                         Tables\Columns\TextColumn::make('last_purchase_price')
                             ->alignRight()->extraAttributes(['class' => 'font-light text-sm'])
                             ->formatStateUsing(fn ($state) => 'Last purchase Price'),
+                        Tables\Columns\TextColumn::make('current_stock')->numeric()->alignRight()->prefix('Stock: ')->extraAttributes(['class' => 'font-bold']),
                     ])->visible(fn ($record) => ! $record->is_product),
                 ])->from('md'),
                 Tables\Columns\Layout\Panel::make([

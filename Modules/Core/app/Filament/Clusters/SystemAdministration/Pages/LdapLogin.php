@@ -57,7 +57,6 @@ class LdapLogin extends BaseLogin
 
         $data = $this->form->getState();
         $provider = is_numeric($data['username']) ? 'students' : 'staff';
-
         // Ensure the user exists or synchronize the user
         $user = \App\Models\User::whereUsername($username = $data['username'])->first();
         if (! $user) {
@@ -69,10 +68,6 @@ class LdapLogin extends BaseLogin
                 Notification::make('error')->danger()->body($exception->getMessage())->title(__('User Sync Error'))->persistent()->send();
             }
         }
-
-        Config::set('auth.guards.web.provider', $provider);
-        $userProvider = Auth::createUserProvider($provider);
-        Auth::setProvider($userProvider);
 
         try {
             abort_unless($user->is_active, 403, 'You are not authorized to login to this system. Please contact your administrator.');
@@ -88,6 +83,9 @@ class LdapLogin extends BaseLogin
                 'data.username' => $e->getMessage(),
             ]);
         }
+        Config::set('auth.guards.web.provider', $provider);
+        $userProvider = Auth::createUserProvider($provider);
+        Auth::setProvider($userProvider);
         $this->listenForLdapBindFailure();
         $res = Auth::attempt($this->getCredentialsFromFormData($data), $data['remember'] ?? false);
         if (! $res) {

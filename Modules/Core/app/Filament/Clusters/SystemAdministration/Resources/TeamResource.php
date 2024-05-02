@@ -30,7 +30,7 @@ class TeamResource extends Resource
                     ->maxLength(255),
                 Forms\Components\TextInput::make('description')
                     ->maxLength(255)->columnSpanFull(),
-                Forms\Components\Toggle::make('is_active')
+                Forms\Components\Toggle::make('enabled')
                     ->required()->default(true),
             ]);
     }
@@ -43,7 +43,7 @@ class TeamResource extends Resource
                     ->searchable(),
                 Tables\Columns\TextColumn::make('name')
                     ->searchable(),
-                Tables\Columns\IconColumn::make('is_active')
+                Tables\Columns\IconColumn::make('enabled')
                     ->boolean(),
                 Tables\Columns\TextColumn::make('creator.name')
                     ->numeric()

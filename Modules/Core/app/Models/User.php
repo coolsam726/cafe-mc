@@ -12,6 +12,7 @@ use Laravel\Sanctum\HasApiTokens;
 use LdapRecord\Laravel\Auth\AuthenticatesWithLdap;
 use LdapRecord\Laravel\Auth\LdapAuthenticatable;
 use Modules\Core\Concerns\HasAudit;
+use Modules\Core\Concerns\HasSettings;
 use Modules\Core\Concerns\HasTeam;
 use Modules\Core\Support\Core;
 use Spatie\Permission\Traits\HasRoles;
@@ -20,7 +21,7 @@ class User extends Authenticatable implements LdapAuthenticatable
 {
     use AuthenticatesWithLdap;
     use HasApiTokens, HasFactory, HasRoles, Notifiable;
-    use HasAudit, HasTeam;
+    use HasAudit, HasTeam, HasSettings;
 
     /**
      * The attributes that are mass assignable.
@@ -51,13 +52,14 @@ class User extends Authenticatable implements LdapAuthenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'settings' => 'array',
         ];
     }
 
-    public function profile(): HasOne
+    /*public function profile(): HasOne
     {
         return $this->hasOne(UserProfile::class);
-    }
+    }*/
 
     public function teams(): BelongsToMany
     {
